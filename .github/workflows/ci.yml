@@ -282,6 +282,66 @@ jobs:
       with:
         path: artifacts
 
+  linux-rpm:
+    name: Linux RPM
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    container:
+      image: fedora:44
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-22.04-8-cores
+            arch: x64
+          - os: ubuntu-22.04-arm64-4-cores
+            arch: arm64
+    steps:
+    - name: Install system dependencies
+      run: dnf install -y git tar gzip rpm-build gcc gcc-c++ make python3
+
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+    - name: Setup pnpm
+      uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
+    - name: Setup node.js
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+      with:
+        node-version-file: '.nvmrc'
+        cache: 'pnpm'
+        cache-dependency-path: 'pnpm-lock.yaml'
+    - name: Cache .electron-gyp
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      with:
+        path: ~/.electron-gyp
+        key: electron-gyp-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+    - name: Install Desktop node_modules
+      run: pnpm install
+      env:
+        NPM_CONFIG_LOGLEVEL: verbose
+        NPM_CONFIG_NODE_GYP: echo
+
+    - run: pnpm run prepare-beta-build
+    - run: pnpm run generate
+
+    - name: Create preload cache
+      run: pnpm run build:preload-cache
+      env:
+        ARTIFACTS_DIR: artifacts/linux-rpm
+
+    - name: Set Linux build target architecture
+      run: pnpm run prepare-linux-build rpm ${{ matrix.arch }}
+
+    - name: Build RPM release package
+      run: pnpm run build:release --publish=never
+      env:
+        DISABLE_INSPECT_FUSE: on
+
+    - name: Upload RPM Artifacts
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      with:
+        name: signal-desktop-rpm-${{ matrix.arch }}
+        path: release/*.rpm
+
   windows:
     name: Windows
     needs: lint
@@ -773,6 +833,7 @@ jobs:
     needs:
       - lint
       - linux
+      - linux-rpm
       - windows
       - sticker-creator
       - mock-tests

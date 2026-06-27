@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import _ from 'lodash';
 import packageJson from '../package.json' with { type: 'json' };
 
-const TARGETS = new Set(['appimage', 'deb']);
+const TARGETS = new Set(['appimage', 'deb', 'rpm']);
 const ARCHITECTURES = new Set(['arm64', 'x64']);
 
 const targets = (process.argv[2] || 'deb').split(',');
