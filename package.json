@@ -546,7 +546,7 @@
         "libXScrnSaver",
         "glibc >= 2.34",
         "gtk3",
-        "mesa-libGBM",
+        "mesa-libgbm",
         "libX11-xcb"
       ]
     },
