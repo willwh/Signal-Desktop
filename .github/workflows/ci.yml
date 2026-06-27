@@ -301,6 +301,8 @@ jobs:
       run: dnf install -y git tar gzip rpm-build gcc gcc-c++ make python3
 
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+    - name: Trust git directory
+      run: git config --global --add safe.directory '*'
     - name: Setup pnpm
       uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
     - name: Setup node.js
