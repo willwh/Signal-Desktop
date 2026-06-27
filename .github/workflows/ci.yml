@@ -285,7 +285,7 @@ jobs:
 
   linux-rpm:
     name: Linux RPM
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ github.repository_owner == 'signalapp' && matrix.os || (matrix.arch == 'arm64' && 'ubuntu-22.04-arm64' || 'ubuntu-latest') }}
     timeout-minutes: 30
     container:
       image: fedora:44
