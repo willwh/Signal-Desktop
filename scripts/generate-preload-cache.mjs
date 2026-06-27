@@ -4,7 +4,7 @@
 import { spawn } from 'node:child_process';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { mkdir, mkdtemp, rm, rename } from 'node:fs/promises';
+import { mkdir, mkdtemp, rm, rename, cp } from 'node:fs/promises';
 import pTimeout from 'p-timeout';
 import { MINUTE } from './utils/durations.mjs';
 // Note: because we don't run under electron - this is a path to binary
@@ -68,7 +68,15 @@ try {
     await mkdir(ARTIFACTS_DIR, { recursive: true });
 
     const logsDir = join(storagePath, 'logs');
-    await rename(logsDir, join(ARTIFACTS_DIR, 'logs'));
+    try {
+      await rename(logsDir, join(ARTIFACTS_DIR, 'logs'));
+    } catch (renameError) {
+      if (renameError.code === 'EXDEV') {
+        await cp(logsDir, join(ARTIFACTS_DIR, 'logs'), { recursive: true });
+      } else {
+        throw renameError;
+      }
+    }
   }
 
   throw error;
