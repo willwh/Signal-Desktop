@@ -298,7 +298,7 @@ jobs:
             arch: arm64
     steps:
     - name: Install system dependencies
-      run: dnf install -y git tar gzip rpm-build gcc gcc-c++ make python3 nss nspr alsa-lib libXScrnSaver libXtst gtk3 mesa-libgbm libX11-xcb libXrandr libXcomposite libXcursor libXdamage libXi libXrender libxcb cups-libs dbus-libs libdrm pulseaudio-libs xorg-x11-server-Xvfb xdg-utils
+      run: dnf install -y git tar gzip rpm-build gcc gcc-c++ make python3 nss nspr alsa-lib libXScrnSaver libXtst gtk3 mesa-libgbm libX11-xcb libXrandr libXcomposite libXcursor libxcrypt-compat libXdamage libXi libXrender libxcb cups-libs dbus-libs libdrm pulseaudio-libs xorg-x11-server-Xvfb xdg-utils
 
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
     - name: Trust git directory
